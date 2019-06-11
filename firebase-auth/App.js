@@ -3,7 +3,7 @@ import AuthLoadingScreen from "./screens/AuthLoadingScreen";
 import LoginPage from "./screens/LoginScreen";
 import HomeScreen from "./screens/HomeScreen";
 import SettingsScreen from "./screens/SettingsScreen";
-import firebaseConfig from "./config/fbConfig";
+import { firebaseConfig } from "./config/fbConfig";
 import {
   createSwitchNavigator,
   createStackNavigator,

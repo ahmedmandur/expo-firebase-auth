@@ -10,6 +10,8 @@ import {
 } from "react-native";
 import firebase from "firebase";
 import Spinner from "../components/Ui/Spinner";
+import * as Facebook from "expo-facebook";
+
 export default class LoginScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -35,10 +37,8 @@ export default class LoginScreen extends React.Component {
           loading: false
         });
         this.props.navigation.navigate("App");
-        console.log(data.user);
       })
       .catch(e => {
-        console.log(e);
         this.setState({
           error: "Authentication failed.",
           success: "",
@@ -46,6 +46,29 @@ export default class LoginScreen extends React.Component {
         });
       });
   };
+
+  _onPressLoginFb = async () => {
+    this.setState({ error: "", loading: true });
+    const {
+      type,
+      token,
+      expires,
+      permissions,
+      declinedPermissions
+    } = await Facebook.logInWithReadPermissionsAsync("2308145589222541", {
+      permissions: ["public_profile"]
+    });
+    if (type === "success") {
+      // Get the user's name using Facebook's Graph API
+      const response = await fetch(
+        `https://graph.facebook.com/me?access_token=${token}`
+      );
+      Alert.alert("Logged in!", `Hi ${(await response.json()).name}!`);
+    } else {
+      // type === 'cancel'
+    }
+  };
+
   _onPressCancel = () => {
     this.setState({ email: "" });
     this.setState({ password: "" });
@@ -57,6 +80,18 @@ export default class LoginScreen extends React.Component {
       return <Spinner />;
     }
     return <Button onPress={this._onPressLogin.bind(this)} title="Log in" />;
+  }
+
+  renderButtonOrSpinnerFb() {
+    if (this.state.loading) {
+      return <Spinner />;
+    }
+    return (
+      <Button
+        onPress={this._onPressLoginFb.bind(this)}
+        title="Log in with Facebook"
+      />
+    );
   }
 
   render() {
@@ -79,6 +114,7 @@ export default class LoginScreen extends React.Component {
           secureTextEntry={true}
         />
         <View style={styles.button}>{this.renderButtonOrSpinner()}</View>
+        <View style={styles.button}>{this.renderButtonOrSpinnerFb()}</View>
         <View style={styles.button}>
           <Button onPress={this._onPressCancel} title="Cancel" />
         </View>
