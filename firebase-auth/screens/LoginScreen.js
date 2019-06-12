@@ -63,9 +63,19 @@ export default class LoginScreen extends React.Component {
       const response = await fetch(
         `https://graph.facebook.com/me?access_token=${token}`
       );
-      Alert.alert("Logged in!", `Hi ${(await response.json()).name}!`);
+      this.setState({
+        error: "",
+        success: "Authentication success!",
+        loading: false
+      });
+      this.props.navigation.navigate("App");
     } else {
       // type === 'cancel'
+      this.setState({
+        error: "Authentication failed.",
+        success: "",
+        loading: false
+      });
     }
   };
 
